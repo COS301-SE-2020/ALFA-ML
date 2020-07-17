@@ -17,3 +17,5 @@
 [Fri May 04 00:51:43.115944 2018] [:error] [pid 7874] [client 127.0.0.1:48012] PHP Warning:  require_once(dbcon\xef\xac\x81g.php): failed to open stream: No such file or directory in /home/cs/students/u16220073/COS 216'/Assignment4/COS216A4/header.php on line 2
 
 [Sun Mar 29 09:22:03.309094 2020] [proxy:debug] [pid 3155] proxy_util.c(1816): AH00926: worker http://u14308453.wheatley.cs.up.ac.za/ local already initialized
+
+[Sun Jun 14 19:08:32.311515 2020] [:error] [pid 16341] [client 127.0.0.1:48030] PHP Notice:  Undefined index: email in /home/cs/students/u16220073/cos216_2019/practical4/p4/validate-login.php on line 40
