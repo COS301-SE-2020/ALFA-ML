@@ -31,8 +31,10 @@ for i in range(0, 60):
   corpus.append(log_entry)
 #print(corpus)
 
-countVectorizer = CountVectorizer(max_features = 1500)
-X = countVectorizer.fit_transform(corpus).toarray()
+cv = CountVectorizer(max_features = 1500)
+cv.fit(corpus) # tokenize and build vocab
+print(cv.vocabulary_)
+X = cv.transform(corpus).toarray()
 y = dataset.iloc[ :, -1].values
 
 
@@ -48,8 +50,13 @@ cm = confusion_matrix(y_test, y_pred)
 #print(cm)
 print("accuracy_score: ", accuracy_score(y_test, y_pred))
 
-import pickle
+
 pickle.dump(nb_clf, open("model.pkl", 'wb'))
+print('Model dumped!')
+
+pickle.dump(cv, open("vectorizer.pkl", 'wb'))
+print('Vectorizer dumped!')
+
 
 # %%
 # Save the model

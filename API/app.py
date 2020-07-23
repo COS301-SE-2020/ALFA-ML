@@ -11,7 +11,7 @@ import db
 
 # load model
 model = pickle.load(open('model.pkl', 'rb'))
-
+vectorizer = pickle.load(open('vectorizer.pkl', 'rb'))
 # API definition
 app = Flask(__name__)
 
@@ -34,16 +34,19 @@ def predict():
 
     corpus.append(log_entry)
     #print("Corpus what what:", corpus)
-    countVectorizer = CountVectorizer(max_features = 1500)
-    X = countVectorizer.fit_transform(corpus).toarray()
+    #countVectorizer = CountVectorizer(max_features = 1500)
+    #X = countVectorizer.fit_transform(corpus).toarray()
+    X = vectorizer.transform(corpus).toarray()
+    print('Here it is: ', X)
     
-    X = X.transpose()
+    #X = X.transpose()
 
     y_pred = model.predict(X)
     
     kb_index = y_pred[0]
+    print('prediction: ', y_pred)
     #print("index", y_pred[0])
-    #print("Prediction please God: ", y_pred)
+    #pritn("Prediction please God: ", y_pred)
 
     # send back to client
     #output = {'prediction': int(y_pred[0]) }
