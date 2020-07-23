@@ -70,7 +70,6 @@ def home():
 def analyse():
     index = predict()
     result = fetch_data(index)
-    #result['status'] = "success"
     return result
 
 if __name__ == '__main__':
