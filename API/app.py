@@ -19,7 +19,7 @@ app = Flask(__name__)
 def predict():
     # get data
     data = request.get_json(force=True)
-    print("Original: ", data)
+    #print("Original: ", data)
     log_entry = data['entry']
     #print("Value: ", log_entry)
 
@@ -61,8 +61,13 @@ def fetch_data(index):
     return jsonify(res)
 
 # routes
-@app.route("/predict", methods=['POST'])
-def analyze():
+@app.route("/")
+def home():
+	msg = {"message": "API is running"}
+	return jsonify(msg)
+
+@app.route("/analyse", methods=['POST'])
+def analyse():
     index = predict()
     result = fetch_data(index)
     #result['status'] = "success"
