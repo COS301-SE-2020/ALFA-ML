@@ -14,20 +14,14 @@ from sklearn.metrics import confusion_matrix, accuracy_score
 from sklearn.feature_extraction.text import CountVectorizer
 
 dataset = pd.read_csv('alfa_dataset.csv - Sheet1.csv', delimiter = ',')
-#print(dataset.head())
-#print(dataset.shape)
 
 corpus = []
 for i in range(0, 60):
-  #print("here", dataset['Log file entries'][i])
   log_entry = re.sub(r"\[[(\w+\d+\s+:\.)]+|\]|/(\w+/)+|(http(://(\w+\.)+))+|(https(://(\w+\.)+))+|(\([\w+\.|\w+,|\w+\)|\w+\\|\.]+)|line(\s+\d+)|referer(:\w+)+|[^a-zA-Z\s+]|\d+|\w+(\-|_|\w+)*\.php|AH|referer|COS|za", " ", dataset['Log_file_entry'][i])
-  #print(log_entry)
   log_entry = log_entry.split()
   ps = PorterStemmer()
   log_entry = [ps.stem(word) for word in log_entry]
-  #print(log_entry)
   log_entry = ' '.join(log_entry)
-  #print(log_entry)
   corpus.append(log_entry)
 #print(corpus)
 

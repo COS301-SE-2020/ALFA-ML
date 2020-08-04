@@ -16,47 +16,37 @@ vectorizer = pickle.load(open('vectorizer.pkl', 'rb'))
 app = Flask(__name__)
 
 # Middleware
+
+# This is the function that uses the trained ML model to predict the correct knowledgebase article
+# @return an index number
 def predict():
     # get data
     data = request.get_json(force=True)
-    #print("Original: ", data)
     log_entry = data['entry']
-    #print("Value: ", log_entry)
 
-    # convert data to 2d matrix
+    # text preprocessing phase
+    # convert data to a form that can be read by the model
     corpus = []
     log_entry = re.sub(r"\[[(\w+\d+\s+:\.)]+|\]|/(\w+/)+|(http(://(\w+\.)+))+|(https(://(\w+\.)+))+|(\([\w+\.|\w+,|\w+\)|\w+\\|\.]+)|line(\s+\d+)|referer(:\w+)+|[^a-zA-Z\s+]|\d+|\w+(\-|_|\w+)*\.php|AH|referer|COS|za", " ", log_entry)
     log_entry = log_entry.split()
     ps = PorterStemmer()
     log_entry = [ps.stem(word) for word in log_entry]
     log_entry = ' '.join(log_entry)
-    #print("Corpus what what: ", log_entry)
-
     corpus.append(log_entry)
-    #print("Corpus what what:", corpus)
-    #countVectorizer = CountVectorizer(max_features = 1500)
-    #X = countVectorizer.fit_transform(corpus).toarray()
     X = vectorizer.transform(corpus).toarray()
-    print('Here it is: ', X)
-    
-    #X = X.transpose()
 
+    # make the prediction
     y_pred = model.predict(X)
     
+    # assign the predicted number as a knowledgebase article
     kb_index = y_pred[0]
-    print('prediction: ', y_pred)
-    #print("index", y_pred[0])
-    #pritn("Prediction please God: ", y_pred)
-
-    # send back to client
-    #output = {'prediction': int(y_pred[0]) }
 
     # return data
-    #return jsonify(results=output)
     return int(kb_index)
 
+# This function uses the index number to fetch the corresponding knowledgebase article from the database
+# @return data from database as json object
 def fetch_data(index):
-    #db.db.kb_articles.insert_one({"name": "John"})
     queryObject = {'kb_index': index}
     res = db.db.kb_articles.find_one(queryObject) 
     res.pop('_id')
