@@ -11,8 +11,10 @@ import db
 
 # load model
 model = pickle.load(open('model.pkl', 'rb'))
+
 # load the vectorizer; Bag-of-Words vector
 vectorizer = pickle.load(open('vectorizer.pkl', 'rb'))
+
 # API definition
 app = Flask(__name__)
 
@@ -24,16 +26,35 @@ def predict():
     # get data
     log_file = request.files["log_file"]
 
-    # Split the string with respect to the new line operator "\n" to separate the individual log file entries
-    log_file_entries = log_file.getvalue().splitlines()
+    # Split the string with respect to the newline operator "\n" to separate the individual log file entries
+    raw_log_file_entries = log_file.getvalue().splitlines()
+
+    # add line numbers to each log file entry
+    line = 1
+    metadata = {}
+    log_file_entries_metadata = []
+    for entry in range(len(raw_log_file_entries)):
+        metadata = { "line_no": line, 
+                    "log_entry": raw_log_file_entries[entry] }
+        log_file_entries_metadata.append(metadata)
+        line += 1
+    #print(log_file_entries_metadata)
 
     # remove duplicates
-    log_file_entries = list(dict.fromkeys(log_file_entries))
+    tracker = []
+    log_file_entries = []
+    for i in range(len(raw_log_file_entries)):
+        if raw_log_file_entries[i] not in tracker:
+            log_file_entries.append(log_file_entries_metadata[i])
+            tracker.append(raw_log_file_entries[i])
+    
+    #print(log_file_entries)
 
     # text preprocessing phase
     # convert data to a form that can be read by the model
     corpus = []
-    for log_entry in log_file_entries:
+    for entry in log_file_entries:
+        log_entry = entry['log_entry']
         log_entry = str(log_entry)
         log_entry = re.sub(r"\[[(\w+\d+\s+:\.)]+|\]|/(\w+/)+|(http(://(\w+\.)+))+|(https(://(\w+\.)+))+|(\([\w+\.|\w+,|\w+\)|\w+\\|\.]+)|line(\s+\d+)|referer(:\w+)+|[^a-zA-Z\s+]|\d+|\w+(\-|_|\w+)*\.php|AH|referer|COS|za|b", " ", log_entry)
         log_entry = log_entry.split()
@@ -43,16 +64,17 @@ def predict():
         corpus.append(log_entry)
     
     # Use Bag-of-Words word embedding to transform text into numbers that can be read by model
-    X = vectorizer.transform(corpus).toarray()
+    input_data = vectorizer.transform(corpus).toarray()
 
     # make the prediction
-    kb_indexes = model.predict(X)
+    kb_indexes = model.predict(input_data)
 
     # return data
     data = {
         'log_file_entries': log_file_entries, 
         'kb_indexes': kb_indexes
     }
+    # return data
     return data
 
 # This function uses the index number to fetch the corresponding knowledgebase article from the database
@@ -72,7 +94,7 @@ def fetch_data(data):
         'log_file_entries': data['log_file_entries'],
         'suggested_solutions': suggested_solutions
     }
-
+    #print(results)
     return jsonify(results)
 
 # routes
@@ -86,6 +108,7 @@ def analyse():
     indexes = predict()
     results = fetch_data(indexes)
     return results
+    #return "hello"
 
 if __name__ == '__main__':
     app.run(port=6667, debug=True)
