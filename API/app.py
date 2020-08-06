@@ -26,8 +26,8 @@ app = Flask(__name__)
 def predict():
     # get data
     # decode base64 file
-    log_file = base64.b64decode(request.form.to_dict()['log_file'])
-    
+    log_file = base64.b64decode(request.get_json(force=True)['content'])
+    print(log_file)
     # Split the string with respect to the newline operator "\n" to separate the individual log file entries
     raw_log_file_entries = log_file.splitlines()
 
