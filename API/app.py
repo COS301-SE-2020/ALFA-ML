@@ -8,6 +8,7 @@ import re
 import nltk
 from nltk.stem.porter import PorterStemmer
 import db
+import base64
 
 # load model
 model = pickle.load(open('model.pkl', 'rb'))
@@ -24,10 +25,13 @@ app = Flask(__name__)
 # @return a list of indexes to the knowledgebase articles
 def predict():
     # get data
-    log_file = request.files["log_file"]
-
+    # decode base64 file
+    json = request.get_json(force=True)
+    log_file = base64.b64decode(json['log'])
+    print(log_file)
+    
     # Split the string with respect to the newline operator "\n" to separate the individual log file entries
-    raw_log_file_entries = log_file.getvalue().splitlines()
+    raw_log_file_entries = log_file.splitlines()
 
     # add line numbers to each log file entry
     line = 1
@@ -76,7 +80,7 @@ def predict():
     }
     # return data
     return data
-
+    
 # This function uses the index number to fetch the corresponding knowledgebase article from the database
 # @return data consisting of the errors encountered and their corresponding knowledgebase articles
 def fetch_data(data):
@@ -108,7 +112,7 @@ def analyse():
     indexes = predict()
     results = fetch_data(indexes)
     return results
-    #return "hello"
+    
 
 if __name__ == '__main__':
     app.run(port=6667, debug=True)
