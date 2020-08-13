@@ -76,6 +76,7 @@ def predict():
         'log_file_entries': log_file_entries, 
         'kb_indexes': kb_indexes
     }
+
     # return data
     return data
     
@@ -83,21 +84,26 @@ def predict():
 # @return data consisting of the errors encountered and their corresponding knowledgebase articles
 def fetch_data(data):
     kb_indexes = data['kb_indexes']
-    suggested_solutions = []
+    print(data)
+    #print(data['log_file_entries'])
+    #kb_indexes = [1, 2]
+    solution_results = []
 
-    for index in kb_indexes:
-        queryObject = {'kb_index': int(index)}
+    for i in range(len(kb_indexes)):
+        queryObject = {'kb_index': int(i)} # where we query the object
         res = db.db.kb_articles.find_one(queryObject)
+        print(res)
         res.pop('_id')
+        for sol in res['suggestions']:
+            sol.pop('_id')
         res.pop('kb_index')
-        suggested_solutions.append(res)
+        res.pop('__v')
+        res['line_no'] = data['log_file_entries'][i]['line_no']
+        res['log_entry'] = data['log_file_entries'][i]['log_entry']
+        solution_results.append(res)
 
-    results = {
-        'log_file_entries': data['log_file_entries'],
-        'suggested_solutions': suggested_solutions
-    }
-    #print(results)
-    return jsonify(results)
+    return jsonify(solution_results)
+    
 
 # routes
 @app.route("/")
@@ -110,6 +116,7 @@ def analyse():
     indexes = predict()
     results = fetch_data(indexes)
     return results
+    #return 'okay'
     
 
 if __name__ == '__main__':
