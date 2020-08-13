@@ -84,9 +84,6 @@ def predict():
 # @return data consisting of the errors encountered and their corresponding knowledgebase articles
 def fetch_data(data):
     kb_indexes = data['kb_indexes']
-    print(data)
-    #print(data['log_file_entries'])
-    #kb_indexes = [1, 2]
     solution_results = []
 
     for i in range(len(kb_indexes)):
@@ -94,8 +91,8 @@ def fetch_data(data):
         res = db.db.kb_articles.find_one(queryObject)
         print(res)
         res.pop('_id')
-        for sol in res['suggestions']:
-            sol.pop('_id')
+        for sug in res['suggestions']:
+            sug.pop('_id')
         res.pop('kb_index')
         res.pop('__v')
         res['line_no'] = data['log_file_entries'][i]['line_no']
@@ -116,7 +113,6 @@ def analyse():
     indexes = predict()
     results = fetch_data(indexes)
     return results
-    #return 'okay'
     
 
 if __name__ == '__main__':
