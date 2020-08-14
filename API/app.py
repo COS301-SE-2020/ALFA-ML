@@ -7,8 +7,17 @@ from sklearn.feature_extraction.text import CountVectorizer
 import re
 import nltk
 from nltk.stem.porter import PorterStemmer
-import config as db
 import base64
+
+from flask import Flask
+from flask_pymongo import pymongo
+#from app import app
+
+DB_CONNECTION= "mongodb://pyraspace:pyraspace2020@learning-shard-00-00-jaac5.mongodb.net:27017,learning-shard-00-01-jaac5.mongodb.net:27017,learning-shard-00-02-jaac5.mongodb.net:27017/ALFA_DB?ssl=true&replicaSet=learning-shard-0&authSource=admin&retryWrites=true&w=majority"
+
+client = pymongo.MongoClient(DB_CONNECTION)
+db = client.get_database('ALFA_DB')
+user_collection = pymongo.collection.Collection(db, 'kb_articles')
 
 # load model
 model = pickle.load(open('model.pkl', 'rb'))
@@ -88,7 +97,7 @@ def fetch_data(data):
 
     for i in range(len(kb_indexes)):
         queryObject = {'kb_index': int(i)} # where we query the object
-        res = db.db.kb_articles.find_one(queryObject)
+        res = db.kb_articles.find_one(queryObject)
         print(res)
         res.pop('_id')
         for sug in res['suggestions']:
