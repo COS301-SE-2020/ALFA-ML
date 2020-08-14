@@ -20,7 +20,7 @@ db = client.get_database('ALFA_DB')
 user_collection = pymongo.collection.Collection(db, 'kb_articles')
 
 # load model
-model = pickle.load(open('model.pkl', 'rb'))
+model = pickle.load(open('./model.pkl', 'rb'))
 
 # load the vectorizer; Bag-of-Words vector
 vectorizer = pickle.load(open('vectorizer.pkl', 'rb'))
