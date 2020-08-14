@@ -7,7 +7,7 @@ from sklearn.feature_extraction.text import CountVectorizer
 import re
 import nltk
 from nltk.stem.porter import PorterStemmer
-import db
+import config as db
 import base64
 
 # load model
