@@ -98,7 +98,6 @@ def fetch_data(data):
     for i in range(len(kb_indexes)):
         queryObject = {'kb_index': int(i)} # where we query the object
         res = db.kb_articles.find_one(queryObject)
-        print(res)
         res.pop('_id')
         for sug in res['suggestions']:
             sug.pop('_id')
@@ -120,8 +119,7 @@ def home():
 @app.route("/analyse", methods=['POST'])
 def analyse():
     indexes = predict()
-    results = fetch_data(indexes)
-    return results
+    return fetch_data(indexes)
     
 
 if __name__ == '__main__':
