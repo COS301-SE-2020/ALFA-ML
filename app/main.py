@@ -35,7 +35,7 @@ app = Flask(__name__)
 def predict():
     # get data
     # decode base64 file
-    log_file = base64.b64decode(request.get_json(force=True)['content'])
+    log_file = base64.b64decode(request.get_json(force=True)['content']).decode('ascii')
     
     # Split the string with respect to the newline operator "\n" to separate the individual log file entries
     raw_log_file_entries = log_file.splitlines()
@@ -123,4 +123,4 @@ def analyse():
     
 
 if __name__ == '__main__':
-    app.run(port=6667, debug=True)
+    app.run()
