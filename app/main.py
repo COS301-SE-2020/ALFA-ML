@@ -112,7 +112,7 @@ def fetch_data(data):
         for sug in sol['suggestions']:
             sug['_id'] = str(sug['_id'])
 
-    print(solution_results)
+    #print(solution_results)
     shortened_result = []
     for i in range(4):
         shortened_result.append(solution_results[i])
