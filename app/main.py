@@ -99,15 +99,25 @@ def fetch_data(data):
         queryObject = {'kb_index': int(i)} # where we query the object
         res = db.kb_articles.find_one(queryObject)
         res.pop('_id')
-        for sug in res['suggestions']:
-            sug.pop('_id')
+        '''for sug in res['suggestions']:
+            sug.pop('_id')'''
         res.pop('kb_index')
         res.pop('__v')
         res['line_no'] = data['log_file_entries'][i]['line_no']
         res['log_entry'] = data['log_file_entries'][i]['log_entry']
         solution_results.append(res)
 
-    return jsonify(solution_results)
+    # convert ObjectId so it can be JSON serialized
+    for sol in solution_results:
+        for sug in sol['suggestions']:
+            sug['_id'] = str(sug['_id'])
+
+    print(solution_results)
+    shortened_result = []
+    for i in range(4):
+        shortened_result.append(solution_results[i])
+
+    return jsonify(shortened_result)
     
 
 # routes
