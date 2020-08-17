@@ -10,29 +10,29 @@ ALFA, an acronym for Automated Log File Analyzer, is a web application that scan
 ### [User Manual](https://drive.google.com/file/d/1RbW9kFbCcJnjq3gRwNXOY5AcdTnW8wkG/view?usp=sharing)
 ### [Coding Standards](https://drive.google.com/file/d/1eH7Ouj1ZUr9smyn_LCdSCF3GPNRAy3tv/view?usp=sharing)
 ### [Project Management Tool](https://app.clickup.com/2546744/v/b/li/21408284)
-### [Machine Learning repo](https://github.com/COS301-SE-2020/ALFA-ML)
+### [Main Repository](https://github.com/COS301-SE-2020/ALFA)
 ### Team Members
-##### _Jabulani Shili_
+##### Jabulani Shili
 * [Github Profile](https://u16220073.github.io/online-cv/)  
 * [Linkedin](https://www.linkedin.com/in/jabulani-shili-a591b4130/)  
 I am a final year BSc Information Knowledge Systems Student majoring in Software Development.
 
-##### _Pako Diale_
+##### Pako Diale
 * [Github Profile](https://pkdiale671.github.io/)  
 * [Linkedin](https://www.linkedin.com/in/pako-diale-53b27a1a9/)  
 I am a final year student studying BSc Computer Science and minoring in Mathematical Statistics.
 
-##### _Orifha Mbedzi_
+##### Orifha Mbedzi
 * [Github Profile](https://github.com/Mbedzi346)  
 * [Linkedin](linkedin.com)  
 I co-major in Computer Science and Data Science
 
-##### _Lindo Mlambo_
+##### Lindo Mlambo
 * [Github Profile](https://github.com/lindo-mlambo)  
 * [Linkedin](https://www.linkedin.com/in/lindo-mlambo-790b95101/)  
 I am a final year Bsc Computer Science student
 
-##### _Duncan Smallwood_
+##### Duncan Smallwood
 * [Github Profile](https://github.com/DuncanSmallwood)  
 * [Linkedin](https://www.linkedin.com/in/duncan-smallwood-020815187/)  
 I am in my final year for BSc Computer Science
