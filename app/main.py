@@ -13,7 +13,7 @@ from flask_pymongo import pymongo
 from datetime import date, datetime
 
 
-DB_CONNECTION= "mongodb://pyraspace:pyraspace2020@learning-shard-00-00-jaac5.mongodb.net:27017,learning-shard-00-01-jaac5.mongodb.net:27017,learning-shard-00-02-jaac5.mongodb.net:27017/ALFA_DB?ssl=true&replicaSet=learning-shard-0&authSource=admin&retryWrites=true&w=majority"
+DB_CONNECTION="link goes here"
 
 client = pymongo.MongoClient(DB_CONNECTION)
 db = client.get_database('ALFA_DB')
