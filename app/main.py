@@ -8,16 +8,18 @@ import re
 import nltk
 from nltk.stem.porter import PorterStemmer
 import base64
-
 from flask import Flask
 from flask_pymongo import pymongo
-#from app import app
+from datetime import date, datetime
 
-DB_CONNECTION="db connection string to Mongodb goes here"
+
+DB_CONNECTION= "mongodb://pyraspace:pyraspace2020@learning-shard-00-00-jaac5.mongodb.net:27017,learning-shard-00-01-jaac5.mongodb.net:27017,learning-shard-00-02-jaac5.mongodb.net:27017/ALFA_DB?ssl=true&replicaSet=learning-shard-0&authSource=admin&retryWrites=true&w=majority"
 
 client = pymongo.MongoClient(DB_CONNECTION)
 db = client.get_database('ALFA_DB')
 user_collection = pymongo.collection.Collection(db, 'kb_articles')
+user_collection1 = pymongo.collection.Collection(db, 'log_files')
+user_collection2 = pymongo.collection.Collection(db, 'analysis_history')
 
 # load model
 model = pickle.load(open('./model.pkl', 'rb'))
@@ -30,13 +32,36 @@ app = Flask(__name__)
 
 # MIDDLEWARE
 
+def store_analysis_data(solution_results):
+	analysis_to_be_saved = {
+		"save_date": str(date.today()),
+		"save_time": str(datetime.now().strftime("%H:%M:%S")),
+		"analysis_data": solution_results
+	}
+	db.analysis_history.insert_one(analysis_to_be_saved)
+
+
+def store_log_file(log_file_contents, log_file_filename):
+	log_file_to_be_saved = {
+    	"upload_date": str(date.today()),
+    	"upload_time": str(datetime.now().strftime("%H:%M:%S")),
+    	"filename": log_file_filename,
+    	"contents": log_file_contents
+    }
+	db.log_files.insert_one(log_file_to_be_saved)
+
+
 # This is the function that uses the trained ML model to predict the correct knowledgebase article
 # @return a list of indexes to the knowledgebase articles
 def predict():
     # get data
     # decode base64 file
     log_file = base64.b64decode(request.get_json(force=True)['content']).decode('ascii')
-    
+    log_filename = request.get_json(force=True)['filename']
+
+    # create log file input to save to database
+    store_log_file(log_file, log_filename)
+
     # Split the string with respect to the newline operator "\n" to separate the individual log file entries
     raw_log_file_entries = log_file.splitlines()
 
@@ -98,10 +123,7 @@ def fetch_data(data):
     for i in range(len(kb_indexes)):
         queryObject = {'kb_index': int(i)} # where we query the object
         res = db.kb_articles.find_one(queryObject)
-        res.pop('_id')
-        '''for sug in res['suggestions']:
-            sug.pop('_id')'''
-        res.pop('kb_index')
+        res.pop('_id') # _id of the entire document entry
         res.pop('__v')
         res['line_no'] = data['log_file_entries'][i]['line_no']
         res['log_entry'] = data['log_file_entries'][i]['log_entry']
@@ -109,13 +131,16 @@ def fetch_data(data):
 
     # convert ObjectId so it can be JSON serialized
     for sol in solution_results:
-        for sug in sol['suggestions']:
-            sug['_id'] = str(sug['_id'])
+    	for sug in sol['suggestions']:
+    		sug['_id'] = str(sug['_id'])
 
-    #print(solution_results)
+    # shorten the results because they don't yet fit into the UI
     shortened_result = []
     for i in range(4):
-        shortened_result.append(solution_results[i])
+    	shortened_result.append(solution_results[i])
+
+    # save the log file analysis data to be viewed as history
+    store_analysis_data(shortened_result)
 
     return jsonify(shortened_result)
     
