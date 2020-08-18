@@ -11,7 +11,7 @@ import base64
 from flask import Flask
 from flask_pymongo import pymongo
 from datetime import date, datetime
-
+from flask_cors import CORS, cross_origin
 
 DB_CONNECTION="link goes here"
 
@@ -29,6 +29,9 @@ vectorizer = pickle.load(open('vectorizer.pkl', 'rb'))
 
 # API definition
 app = Flask(__name__)
+
+# Fix CORS errors
+CORS(app, support_credentials=True)
 
 # MIDDLEWARE
 
@@ -152,6 +155,7 @@ def home():
 	return jsonify(msg)
 
 @app.route("/analyse", methods=['POST'])
+@cross_origin(supports_credentials=True)
 def analyse():
     indexes = predict()
     return fetch_data(indexes)
