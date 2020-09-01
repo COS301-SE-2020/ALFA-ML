@@ -59,9 +59,10 @@ def store_log_file(log_file_contents, log_file_filename):
 def predict():
     # get data
     # decode base64 file
-    log_file = base64.b64decode(request.get_json(force=True)['content']).decode('ascii')
+    #log_file = base64.b64decode(request.get_json(force=True)['content']).decode('ascii')
     log_filename = request.get_json(force=True)['filename']
 
+    log_file = request.get_json(force=True)['content']
     # create log file input to save to database
     store_log_file(log_file, log_filename)
 
@@ -139,8 +140,12 @@ def fetch_data(data):
 
     # shorten the results because they don't yet fit into the UI
     shortened_result = []
-    for i in range(4):
-    	shortened_result.append(solution_results[i])
+    size = len(solution_results)
+    if size > 4:
+        for i in range(4):
+            shortened_result.append(solution_results[i])
+    else:
+        shortened_result = solution_results
 
     # save the log file analysis data to be viewed as history
     store_analysis_data(shortened_result)
