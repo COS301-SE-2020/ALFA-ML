@@ -88,9 +88,6 @@ def update_graph(option_slctd):
         template='plotly_dark'
     )
     
-
-
-
     # return in the order of the outputs
     return container, fig
 
