@@ -1,98 +1,35 @@
-import pandas as pd
-import plotly.express as px
-
-import dash 
+import dash.dependencies as dd
 import dash_core_components as dcc
 import dash_html_components as html
-from dash.dependencies import Input, Output
+import dash 
 
-app = dash.Dash(__name__)
+from io import BytesIO
 
-# ------------------------------------------
-# Import and clean data
-df = pd.read_csv("intro_bees.csv")
+import pandas as pd
+from wordcloud import WordCloud
+import base64
 
-df = df.groupby(['State', 'ANSI', 'Affected by', 'Year', 'state_code'])[['Pct of Colonies Impacted']].mean()
-df.reset_index(inplace=True)
-print(df[:5])
+# external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
-# ------------------------------------------
-# App layout
-# remember: what does inside your 'App Layout' is your dash components i.e dropdowns, graphs, checkboxes
+app = dash.Dash(__name__) #, external_stylesheets=external_stylesheets)
+
+dfm = pd.DataFrame({'word': ['apple', 'pear', 'orange'], 'freq': [1,3,9]})
 
 app.layout = html.Div([
-
-    html.H1(
-        "Web Application Dashboards with Dash", 
-        style={'text-align': 'center'}
-    ),
-
-    dcc.Dropdown(
-        id='slct_year',
-        options=[
-            {'label': '2015', 'value': 2015},
-            {'label': '2016', 'value': 2016},
-            {'label': '2017', 'value': 2017},
-            {'label': '2018', 'value': 2018}
-        ],
-        multi=False,
-        value=2015,
-        style={'width': '40%'}
-    ),
-
-    html.Div(
-        id='output_container',
-        children=[]
-    ),
-
-    html.Br(),
-
-    dcc.Graph(
-        id='my_bee_map',
-        figure={}
-    )
+    html.Img(id="image_wc"),
 ])
 
-# -------------------------------------
-# Connect the Plotly graphs with the Dash components
-@app.callback(
-    [Output(component_id='output_container', component_property='children'),
-     Output(component_id='my_bee_map', component_property='figure')],
-    [Input(component_id='slct_year', component_property='value')]   
+def plot_wordcloud(data):
+    d = {a: x for a, x in data.values}
+    wc = WordCloud(background_color='black', width=480, height=360)
+    wc.fit_words(d)
+    return wc.to_image()
 
-)
-# this is the function definition of the callback
-# each parameter is connected to the number of inputs -> parameter always refers to the component_property
-def update_graph(option_slctd):
-    print(option_slctd)
-    print(type(option_slctd))
+@app.callback(dd.Output('image_wc', 'src'), [dd.Input('image_wc', 'id')])
+def make_image(b):
+    img = BytesIO()
+    plot_wordcloud(data=dfm).save(img, format='PNG')
+    return 'data:image/png;base64,{}'.format(base64.b64encode(img.getvalue()).decode())
 
-    # return value 1
-    container = "The year chosen by the user was: {}".format(option_slctd)
-
-    dff = df.copy()
-    dff = dff[dff['Year'] == option_slctd]
-    dff = dff[dff['Affected by'] == 'Varroa_mites']
-    
-    # Plotly Express
-    # return value 2
-    fig = px.choropleth(
-        data_frame=dff,
-        locationmode='USA-states',
-        locations='state_code',
-        scope='usa',
-        color='Pct of Colonies Impacted',
-        hover_data=['State', 'Pct of Colonies Impacted'],
-        color_continuous_scale=px.colors.sequential.YlOrRd,
-        labels={'Pct of Colonies Impacted': '% of Bee Colonies'},
-        template='plotly_dark'
-    )
-    
-    # return in the order of the outputs
-    return container, fig
-
-
-
-# -------------------------------------
 if __name__ == '__main__':
     app.run_server(debug=True)
