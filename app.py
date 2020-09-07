@@ -1,47 +1,124 @@
+# Import libraries
 import dash.dependencies as dd
 import dash_core_components as dcc
 import dash_html_components as html
 import dash 
-
+import dash_table as dt
+import dash_bootstrap_components as dbc
+import plotly.express as px
 from io import BytesIO
-
 import pandas as pd
 from wordcloud import WordCloud
 import base64
 
-#external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
+# define the app 
+external_stylesheets = [dbc.themes.BOOTSTRAP]
+app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 
-app = dash.Dash(__name__) #, external_stylesheets=external_stylesheets)
+# Constants
+PLOTLY_LOGO = "https://images.plot.ly/logo/new-branding/plotly-logomark.png"
 
 # ==============================================
 # Import the dataset or define the dataset to be used programmtically
 # Data preparation will also take place here.
-dfm = pd.DataFrame({'word': ['PHP Fatal Error', 'PHP Notice', 'Password Auth Failure'], 'freq': [1,3,9]})
+data = {
+    'error_types': ['Fatal_Error', 'Notice_Error', 'Password_Auth_Failure', 'Warning', 'Parse_Error', 'Undefined'], 
+    'frequency': [4, 8, 17, 14, 30, 21]
+}
+
+dfm = pd.DataFrame(data)
 
 # ==============================================
 # Graphs, diagrams and other illustrations will be defined here
+WORD_CLOUD = html.Img(
+    id="image_wc"
+)
 
+TABLE = dbc.Table.from_dataframe(dfm, striped=True, bordered=True, hover=True)
+
+DASH_TABLE = dt.DataTable(
+    columns=[{"name": i, "id": i} for i in dfm.columns],
+    data=dfm.to_dict('records'),
+    style_cell={'textAlign': 'left'},
+    
+)
+
+import plotly.graph_objects as go
+
+colors = ['lightslategray',] * 6
+colors[1] = 'crimson'
+
+fig = go.Figure(data=[go.Bar(
+    x=data['error_types'],
+    y=data['frequency'],
+    marker_color=colors # marker color can be a single color value or an iterable
+)])
+fig.update_layout(title_text='Errors and Their Frequencies')
 
 # ==============================================
 # Metadata and attributes
 colours = {
-    'background': '#111111',
+    'background': '#d3d3d3',
     'text': '#7FDBFF'
 }
 
 # ==============================================
-# Create visualisation layout
-app.layout = html.Div(style={'backgroundColor': 'red'}, children=[
-    html.H1(
-        "ALFA-ML WordCloud Prototype",
-        style={
-            'textAlign': 'center',
-            'color': colours['text']
-        }
+# Create visualisation layout and components
+NAVBAR = dbc.Navbar(
+    children=[
+        html.A(
+            # Use row and col to control vertical alignment of logo / brand
+            dbc.Row(
+                [
+                    dbc.Col(html.Img(src=PLOTLY_LOGO, height="30px")),
+                    dbc.Col(
+                        dbc.NavbarBrand("ALFA Data Science Dashboard", className="ml-2")
+                    ),
+                ],
+                align="center",
+                no_gutters=True,
+            ),
+        )
+    ],
+    color="dark",
+    dark=True,
+    sticky="top",
+)
+
+card_content = [
+    dbc.CardHeader("World Cloud"),
+    dbc.CardBody(
+        [
+            html.H5("Most Frequent Errors", className="card-title"),
+            html.P(
+                WORD_CLOUD,
+            ),
+        ]
+    ),
+]
+app.layout = html.Div(children=[
+    NAVBAR,
+
+    html.Div(
+        style={'width': '80%', 'margin': 'auto', 'margin-top': '50px'}, 
+        children=[
+            TABLE,
+        ],
     ),
 
-    html.Img(
-        id="image_wc"
+    html.Div(
+        children=[
+            dcc.Graph(
+                figure=fig,
+            ),
+        ],
+    ),
+
+    html.Div(
+        style={'margin': '150px 150px'},
+        children= [
+            dbc.Card(card_content, color='success', outline=True)
+        ]
     ),
 ])
 
