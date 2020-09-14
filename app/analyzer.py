@@ -1,27 +1,31 @@
 import re
-import pickle
 
 from nltk import PorterStemmer
 from nltk.corpus import wordnet as wn
 from nltk.corpus import wordnet_ic
-import scraper
+from . import scraper
 import requests
 import json
-import csv
+from flask import jsonify, Flask
+from urllib.request import Request, urlopen
+from urllib.parse import urlencode
 
+headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36',}
 url = 'https://project-alfa.herokuapp.com/articles'
 s = requests.get(url)
 print(s)
 data = s.json()
 suggestions = []
 solutions = []
-
+articles = []
+results = []
 for i in data:
     #print(i['suggestions'][0]5)
+    articles.append(i)
     suggestions.append(i['suggestions'][0]['description'])
 
 def predict(log_entry):
-
+    print("Log entry: " + log_entry)
     log_entry = re.sub(
         r"\[[(\w+\d+\s+:\.)]+|\]|/(\w+/)+|(http(://(\w+\.)+))+|(https(://(\w+\.)+))+|(\([\w+\.|\w+,|\w+\)|\w+\\|\.]+)|line(\s+\d+)|referer(:\w+)+|[^a-zA-Z\s+]|\d+|\w+(\-|_|\w+)*\.php|AH|referer|COS|za",
         " ", log_entry)
@@ -31,6 +35,7 @@ def predict(log_entry):
     log_entry = [ps.stem(word) for word in log_entry]
     word_list = []
     solution_list = []
+
     # solutions = [
     #     'Fatal error: Call to undefined function mysqli() in',
     #     'Apache Error: No matching DirectoryIndex',
@@ -80,15 +85,31 @@ def predict(log_entry):
         similarities.append(similarity)
         similarity = 0
         count += 1
-    print(max(similarities))
-    if max(similarities) < 150:
+    print(str(max(similarities)) + '\t' + articles[similarities.index(max(similarities))]['suggestions'][0]['description'])
+    if max(similarities) < 160:
         print('Scraping')
-        return scraper.scrape(unstemmed_log_entry)
-    return (original_solutions[similarities.index(max(similarities))])
+        descr, link =  scraper.scrape(unstemmed_log_entry)
+        payload = json.dumps({"link": link, "description": descr})
+        add = requests.post(url, json = {"link": link, "description": descr} , headers  = headers)
+        print(add.content)
+        results.append({"link": link, "description": descr})
+    else:
+        result_article = articles[similarities.index(max(similarities))]['suggestions'][0]
+        description = result_article['description']
+        link = result_article['link']
+        results.append({"link": link, "description": description})
 
 
-with open('data/log files/test.log') as fp:
-    for line in fp:
-        print(line)
-        print(predict(line))
-        print('=================================================')
+def fetch_result(entries):
+    # with open('data/log files/test.log') as fp:
+    #     for line in fp:
+    #         print(line)
+    #         print(predict(line))
+    #         print(results)
+    #         print('=================================================')
+    for i in entries:
+        print(i)
+        predict(i)
+    return jsonify({'articles' : results})
+
+

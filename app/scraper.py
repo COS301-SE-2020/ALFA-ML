@@ -24,4 +24,4 @@ def scrape(query):
     page = urlopen(req).read()
     soup = BeautifulSoup(page, 'html.parser')
     #print(soup.title.string)
-    return soup.title.string + '\n' + new_url
+    return (soup.title.string,  new_url)
