@@ -158,6 +158,7 @@ def make_image(b):
     plot_wordcloud(data=dfm).save(img, format='PNG')
     return 'data:image/png;base64,{}'.format(base64.b64encode(img.getvalue()).decode())
 
+
 # ==============================================
 # Run the program
 if __name__ == '__main__':
