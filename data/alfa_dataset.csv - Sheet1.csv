@@ -1,4 +1,8 @@
+<<<<<<< HEAD
+Log file entries,KB index
+=======
 Log_file_entry,KB_index
+>>>>>>> 436194767467f531f111c75ab068a6fb8f2049fd
 "[Mon Feb 12 13:33:43.537781 2018] [autoindex:error] [pid 25037] [client 127.0.0.1:57624] AH01276: Cannot serve directory /home/cs/students/u16220073/: No matching DirectoryIndex (index.html,index.html.var,index.php,index.phtml) found, and server-generated directory index forbidden by Options directive",0
 "[Tue Feb 13 21:57:17.848217 2018] [auth_basic:error] [pid 27382] [client 127.0.0.1:44180] AH01617: user u16220073: authentication failure for ""/"": Password Mismatch",1
 [Wed Apr 11 02:20:30.821939 2018] [:error] [pid 28783] [client 127.0.0.1:42222] PHP Warning:  mysqli_connect(): (HY000/1045): Access denied for user 'root'@'localhost' (using password: NO) in /home/cs/students/u16220073/COS 221/cos221A3/db.php on line 6,2
