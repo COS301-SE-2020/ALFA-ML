@@ -59,10 +59,6 @@ itsdangerous==1.1.0
 jdcal==1.4.1
 Jinja2==2.11.2
 json5==0.9.5
-jupyter==1.0.0
-jupyter-console==6.1.0
-jupyter-core==4.6.3
-jupyterlab==2.1.5
 kiwisolver==1.2.0
 lazy-object-proxy==1.4.3
 libarchive-c==2.9
