@@ -110,6 +110,7 @@ def fetch_result(entries):
     for i in entries:
         print(i)
         predict(i)
+    print(results)
     return jsonify(results)
 
 
