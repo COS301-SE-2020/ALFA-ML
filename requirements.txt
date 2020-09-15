@@ -9,9 +9,14 @@ Jinja2==2.11.2
 joblib==0.16.0
 MarkupSafe==1.1.1
 nltk==3.5
+numpy==1.19.2
 pybase64==1.0.1
 pymongo==3.11.0
 regex==2020.7.14
+scikit-learn==0.23.2
+scipy==1.5.2
+sklearn==0.0
 soupsieve==2.0.1
+threadpoolctl==2.1.0
 tqdm==4.49.0
 Werkzeug==1.0.1
