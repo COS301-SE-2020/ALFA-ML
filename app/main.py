@@ -155,8 +155,9 @@ def home():
 	msg = {"message": "API is running"}
 	return jsonify(msg)
 
+
+#@cross_origin(supports_credentials=True)
 @app.route("/analyse", methods=['POST'])
-@cross_origin(supports_credentials=True)
 def analyse():
     #indexes = predict()
     return predict()
