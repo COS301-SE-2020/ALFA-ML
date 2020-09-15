@@ -3,7 +3,7 @@ import re
 from nltk import PorterStemmer
 from nltk.corpus import wordnet as wn
 from nltk.corpus import wordnet_ic
-from . import scraper
+import scraper
 import requests
 import json
 from flask import jsonify, Flask
