@@ -110,6 +110,6 @@ def fetch_result(entries):
     for i in entries:
         print(i)
         predict(i)
-    return jsonify({'articles' : results})
+    return jsonify(results)
 
 
