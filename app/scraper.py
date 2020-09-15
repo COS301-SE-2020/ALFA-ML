@@ -1,7 +1,6 @@
 from bs4 import BeautifulSoup
 from urllib.request import urlopen, Request
 import urllib.parse
-import urllib3
 
 
 def scrape(query):
