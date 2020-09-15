@@ -1,7 +1,7 @@
 from bs4 import BeautifulSoup
 from urllib.request import urlopen, Request
 import urllib.parse
-
+import requests
 
 def scrape(query):
     query = urllib.parse.quote(query)
