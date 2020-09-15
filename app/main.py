@@ -11,7 +11,7 @@ import pybase64
 from flask import Flask
 from flask_pymongo import pymongo
 from datetime import date, datetime
-#from flask_cors import CORS, cross_origin
+from flask_cors import CORS, cross_origin
 import analyzer
 DB_CONNECTION="mongodb://pyraspace:pyraspace2020@learning-shard-00-00-jaac5.mongodb.net:27017,learning-shard-00-01-jaac5.mongodb.net:27017,learning-shard-00-02-jaac5.mongodb.net:27017/ALFA_DB?ssl=true&replicaSet=learning-shard-0&authSource=admin&retryWrites=true&w=majority"
 
@@ -25,7 +25,8 @@ user_collection2 = pymongo.collection.Collection(db, 'analysis_history')
 # API definition
 app = Flask(__name__)
 
-# Fix CORS errorsCORS(app, support_credentials=True)
+# Fix CORS errors
+CORS(app, support_credentials=True)
 
 # MIDDLEWARE
 
@@ -156,8 +157,8 @@ def home():
 	return jsonify(msg)
 
 
-#@cross_origin(supports_credentials=True)
 @app.route("/analyse", methods=['POST'])
+@cross_origin(supports_credentials=True)
 def analyse():
     #indexes = predict()
     return predict()
