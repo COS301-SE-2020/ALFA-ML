@@ -2,7 +2,6 @@
 from flask import Flask, request, jsonify
 import pandas as pd
 import numpy as pd
-import pickle
 from sklearn.feature_extraction.text import CountVectorizer
 import re
 import nltk
