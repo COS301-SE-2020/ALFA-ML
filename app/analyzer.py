@@ -34,6 +34,7 @@ def initialize():
         articles.append(i)
         suggestions.append(i['suggestions'][0]['description'])
 def predict(log_entry):
+    original_entry = log_entry
     print("Log entry: " + log_entry)
     log_entry = re.sub(
         r"\[[(\w+\d+\s+:\.)]+|\]|/(\w+/)+|(http(://(\w+\.)+))+|(https(://(\w+\.)+))+|(\([\w+\.|\w+,|\w+\)|\w+\\|\.]+)|line(\s+\d+)|referer(:\w+)+|[^a-zA-Z\s+]|\d+|\w+(\-|_|\w+)*\.php|AH|referer|COS|za",
@@ -95,7 +96,7 @@ def predict(log_entry):
         payload = json.dumps({"link": link, "description": descr})
         add = requests.post(url, json={"link": link, "description": descr}, headers=headers)
         print(add.content)
-        results.append({"log_entry": unstemmed_log_entry,"link": link, "description": description})
+        results.append({"log_entry": original_entry,"link": link, "description": description})
         return
     print(str(max(similarities)) + '\t' + articles[similarities.index(max(similarities))]['suggestions'][0]['description'])
     if max(similarities) < 15:
@@ -104,12 +105,12 @@ def predict(log_entry):
         payload = json.dumps({"link": link, "description": descr})
         add = requests.post(url, json = {"link": link, "description": descr} , headers  = headers)
         print(add.content)
-        results.append({"log_entry": unstemmed_log_entry,"link": link, "description": description})
+        results.append({"log_entry": original_entry,"link": link, "description": description})
     else:
         result_article = articles[similarities.index(max(similarities))]['suggestions'][0]
         description = result_article['description']
         link = result_article['link']
-        results.append({"log_entry": unstemmed_log_entry,"link": link, "description": description})
+        results.append({"log_entry": original_entry,"link": link, "description": description})
 
 
 def fetch_result(entries):
