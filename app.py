@@ -53,6 +53,8 @@ for dirty in dirty_list:
         if not any(char.isdigit() for char in dirt_piece):
             if not any(not char.isalnum() for char in dirt_piece):
                 error_msg += dirt_piece + " "
+
+    error_msg = " ".join(error_msg.split(" ")[:5])
     if error_msg:
         error_msg_list.append(error_msg.lower())
 '''
@@ -100,8 +102,8 @@ df = pd.DataFrame(data)
 # count how frequently each error messages occurs 
 counts = df['error_messages'].value_counts()
 unique_error_frequencies = {
-    "unique_error_msgs": list(counts.index.values),
-    "frequencies": counts.tolist()
+    "unique_error_msgs": list(counts.index.values)[:8],
+    "frequencies": counts.tolist()[:8]
 }
 
 # ===========================================================================
@@ -111,29 +113,18 @@ unique_error_frequencies = {
 # Attributes
 colours = {
     'background': '#000000',
-    'text': '#7FDBFF'
+    'text': '#FFFFFF'
 }
 
-colors = ['lightslategray',] * 6
+colors = ['lightslategray', 'green', 'red'] * 6
 colors[1] = 'crimson'
 
 # ===========================================================================
-# Graphs, diagrams and other illustrations will be defined here
-WORD_CLOUD = html.Img(
-    id="image_wc"
-)
-
-TABLE = dbc.Table.from_dataframe(
-	df.head(5), 
-	striped=True, 
-	bordered=True, 
-	hover=True,
-	dark=True,
-)
+# Graphs, diagrams and other illustrations will be defined herE
 
 fig_bar_chart = go.Figure(data=[go.Bar(
-    y=unique_error_frequencies['unique_error_msgs'][:8],
-    x=unique_error_frequencies['frequencies'][:8],
+    y=unique_error_frequencies['unique_error_msgs'],
+    x=unique_error_frequencies['frequencies'],
     marker_color=colors, # marker color can be a single color value or an iterable
     orientation="h"
 )])
@@ -153,24 +144,26 @@ fig_bar_chart.update_layout(
    	),
    	yaxis=dict(
         title='Error Messages',
-        titlefont_size=11,
+        titlefont_size=16,
         tickfont_size=11,
     ),
 )
 
 
 fig_pie_chart = go.Figure(data=[go.Pie(
-	labels=unique_error_frequencies['unique_error_msgs'], 
-	values=unique_error_frequencies['frequencies'], 
+	labels=unique_error_frequencies['unique_error_msgs'][:8], 
+	values=unique_error_frequencies['frequencies'][:8], 
 	hole=.3)
 ])
 
 fig_pie_chart.update_layout(
-	title_text='Errors and Their Frequencies Pie Chart'
+	plot_bgcolor=colours['background'],
+	paper_bgcolor=colours['background'],
+	font_color=colours['text'],
 )
 
 
-# ==============================================================
+# ================================================================================================
 # Custom components to be appended to app layout
 NAVBAR = dbc.Navbar(
     children=[
@@ -192,19 +185,20 @@ NAVBAR = dbc.Navbar(
     sticky="top",
 )
 
-card_content = [
-    dbc.CardHeader("Word Cloud"),
-    dbc.CardBody(
-        [
-            html.H5("Most Frequent Errors", className="card-title"),
-            html.P(
-                WORD_CLOUD,
-            ),
-        ]
-    ),
-]
+WORD_CLOUD = html.Img(
+    id="image_wc"
+)
 
-# =============================================================
+TABLE = dbc.Table.from_dataframe(
+	df.head(5), 
+	striped=True, 
+	bordered=True, 
+	hover=True,
+	dark=True,
+)
+
+
+# ===============================================================================================
 # app.layout describes what the app will look like
 app.layout = html.Div(children=[	
     NAVBAR,
@@ -215,7 +209,6 @@ app.layout = html.Div(children=[
         	html.H3(
 				"Data Table"
 			),
-			dbc.Button("expand", color="info", className="mr-1", id="tbl_expand_btn"),
             TABLE,
         ],
     ),
@@ -225,17 +218,44 @@ app.layout = html.Div(children=[
         figure=fig_bar_chart,    
     ),
 
-    dcc.Graph(
-        figure=fig_pie_chart,
+    html.Div(
+    	children=[
+    		dbc.Row(
+    			[
+    				dbc.Col()
+    			]
+    		)
+    	]
+    ),
+
+    html.Div(
+    	[
+    		dbc.Row(
+    			[
+    				dbc.Col(dcc.Graph(figure=fig_pie_chart)),
+    			]
+    		)
+    	]
     ),
 
     html.Div(
         style={'margin': '150px 150px'},
         children= [
-            dbc.Card(card_content, color='success', outline=True)
+            dbc.Row(
+				[
+		    		dbc.Col(html.P("")),
+		    		dbc.Col(html.P(WORD_CLOUD)),
+		    		dbc.Col(html.P(""))
+				]
+    	)
         ]
     ),
-], style={'backgroundColor': colours['background']})
+], 
+style={
+	'backgroundColor': colours['background'],
+	'overflow-x': 'hidden'
+},) 
+
 # ===============================================================================================================
 
 # INTERACTIVENESS
