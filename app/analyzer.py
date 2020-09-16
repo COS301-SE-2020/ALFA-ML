@@ -95,7 +95,7 @@ def predict(log_entry):
         payload = json.dumps({"link": link, "description": descr})
         add = requests.post(url, json={"link": link, "description": descr}, headers=headers)
         print(add.content)
-        results.append({"link": link, "description": descr})
+        results.append({"log_entry": unstemmed_log_entry,"link": link, "description": description})
         return
     print(str(max(similarities)) + '\t' + articles[similarities.index(max(similarities))]['suggestions'][0]['description'])
     if max(similarities) < 15:
@@ -104,12 +104,12 @@ def predict(log_entry):
         payload = json.dumps({"link": link, "description": descr})
         add = requests.post(url, json = {"link": link, "description": descr} , headers  = headers)
         print(add.content)
-        results.append({"link": link, "description": descr})
+        results.append({"log_entry": unstemmed_log_entry,"link": link, "description": description})
     else:
         result_article = articles[similarities.index(max(similarities))]['suggestions'][0]
         description = result_article['description']
         link = result_article['link']
-        results.append({"link": link, "description": description})
+        results.append({"log_entry": unstemmed_log_entry,"link": link, "description": description})
 
 
 def fetch_result(entries):
