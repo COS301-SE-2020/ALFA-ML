@@ -15,18 +15,16 @@ import nltk
 from nltk.tokenize import word_tokenize
 import flask
 
-# server
-server = flask.Flask(__name__)
 # define the app 
-app = dash.Dash(__name__, external_stylesheets=[dbc.themes.DARKLY], server=server)
-
+app = dash.Dash(__name__, external_stylesheets=[dbc.themes.DARKLY])
+server = app.server
 
 
 # =========================================================================
 # Import the dataset
 
 # Read file
-file = open("preprocessing/error.txt", "r")
+file = open("error.txt", "r")
 contents = ""
 for i in range(5000):
     contents += str(file.readline())
