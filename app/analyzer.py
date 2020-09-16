@@ -114,7 +114,6 @@ def fetch_result(entries):
         print(i)
         predict(i)
     print(results)
-    results = []
     return jsonify(results)
 
 
