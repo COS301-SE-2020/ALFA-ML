@@ -24,7 +24,7 @@ for i in data:
     articles.append(i)
     suggestions.append(i['suggestions'][0]['description'])
 
-def predict(log_entry):
+def predict(log_entry, result):
     print("Log entry: " + log_entry)
     log_entry = re.sub(
         r"\[[(\w+\d+\s+:\.)]+|\]|/(\w+/)+|(http(://(\w+\.)+))+|(https(://(\w+\.)+))+|(\([\w+\.|\w+,|\w+\)|\w+\\|\.]+)|line(\s+\d+)|referer(:\w+)+|[^a-zA-Z\s+]|\d+|\w+(\-|_|\w+)*\.php|AH|referer|COS|za",
@@ -87,6 +87,7 @@ def predict(log_entry):
         add = requests.post(url, json={"link": link, "description": descr}, headers=headers)
         print(add.content)
         results.append({"link": link, "description": descr})
+        res.append({"link": link, "description": descr})
         return
     print(str(max(similarities)) + '\t' + articles[similarities.index(max(similarities))]['suggestions'][0]['description'])
     if max(similarities) < 15:
@@ -96,11 +97,13 @@ def predict(log_entry):
         add = requests.post(url, json = {"link": link, "description": descr} , headers  = headers)
         print(add.content)
         results.append({"link": link, "description": descr})
+        res.append({"link": link, "description": descr})
     else:
         result_article = articles[similarities.index(max(similarities))]['suggestions'][0]
         description = result_article['description']
         link = result_article['link']
         results.append({"link": link, "description": description})
+        res.append({"link": link, "description": descr})
 
 
 def fetch_result(entries):
@@ -110,11 +113,11 @@ def fetch_result(entries):
     #         print(predict(line))
     #         print(results)
     #         print('================================================='
-    results = []
+    res = []
     for i in entries:
         print(i)
-        predict(i)
-    print(results)
-    return jsonify(results)
+        predict(i, res)
+    print(res)
+    return jsonify(res)
 
 
