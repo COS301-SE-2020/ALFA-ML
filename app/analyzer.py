@@ -109,7 +109,8 @@ def fetch_result(entries):
     #         print(line)
     #         print(predict(line))
     #         print(results)
-    #         print('=================================================')
+    #         print('================================================='
+    results = []
     for i in entries:
         print(i)
         predict(i)
