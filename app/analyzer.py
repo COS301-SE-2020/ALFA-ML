@@ -25,6 +25,7 @@ for i in data:
     suggestions.append(i['suggestions'][0]['description'])
 
 def predict(log_entry, result):
+    res = result
     print("Log entry: " + log_entry)
     log_entry = re.sub(
         r"\[[(\w+\d+\s+:\.)]+|\]|/(\w+/)+|(http(://(\w+\.)+))+|(https(://(\w+\.)+))+|(\([\w+\.|\w+,|\w+\)|\w+\\|\.]+)|line(\s+\d+)|referer(:\w+)+|[^a-zA-Z\s+]|\d+|\w+(\-|_|\w+)*\.php|AH|referer|COS|za",
