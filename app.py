@@ -1,5 +1,5 @@
 # Import libraries
-import dash.dependencies as dd
+from dash.dependencies import Input, Output
 import dash_core_components as dcc
 import dash_html_components as html
 import dash 
@@ -11,12 +11,14 @@ from wordcloud import WordCloud
 import base64
 import plotly.graph_objects as go
 from datetime import datetime
+import nltk
+from nltk.tokenize import word_tokenize
 
 # Global Constants
 PLOTLY_LOGO = "https://images.plot.ly/logo/new-branding/plotly-logomark.png"
 
 # define the app 
-app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
+app = dash.Dash(__name__, external_stylesheets=[dbc.themes.DARKLY])
 
 # =========================================================================
 # Import the dataset
@@ -53,7 +55,18 @@ for dirty in dirty_list:
                 error_msg += dirt_piece + " "
     if error_msg:
         error_msg_list.append(error_msg.lower())
-
+'''
+stop_words = set(stopwords.words('english'))
+# remove all the stopwords
+for sentence in error_msg_list:
+	filtered_error_msg_list = []
+	word_tokens = word_tokenize(sentence)
+	filtered_sentence = [w for w in word_tokens if not w in stop_words] 
+	for w in word_tokens: 
+	    if w not in stop_words: 
+	        filtered_sentence.append(w)
+	filtered_error_msg_list.append(" ".join(filtered_sentence))
+'''
 # clean and formate the dates
 MONTH_MAP = {
     # map words to their digits representations
@@ -70,6 +83,8 @@ for date_time_str in date_time_list:
     formatted_date_str = date_time_pieces[2] +"/"+ MONTH_MAP[date_time_pieces[1][:3]] +"/"+ date_time_pieces[4][2:]
     # convert date string to actual date object and append to date list
     date_list.append(datetime.strptime(formatted_date_str, '%d/%m/%y').date())
+
+
 
 # create the dictionary of all the wrangled log file data
 data = {
@@ -88,23 +103,6 @@ unique_error_frequencies = {
     "unique_error_msgs": list(counts.index.values),
     "frequencies": counts.tolist()
 }
-
-"""
-data = {
-    'error_types': ['Fatal_Error', 'Notice_Error', 'Password_Auth_Failure', 'Warning', 'Parse_Error', 'Undefined'], 
-    'frequency': [4, 8, 1, 14, 150, 3]
-}
-
-data1 = {
-    'error_types': ['Fatal_Error', 'Notice_Error', 'Password_Auth_Failure', 'Warning', 'Parse_Error', 'Undefined'], 
-    'frequency': [4, 8, 17, 14, 30, 21],
-    'date': ['Sat Feb 19 01:02:23.406157 2018','Sun Mar 08 01:02:23.406157 2018','Thur Jun 07 01:02:23.406157 2018','Tue Jul 12 01:02:23.406157 2018', 'Fri Aug 04 01:02:23.406157 2018','Sat Sep 11 01:02:23.406157 2018'],
-    'client': ['127.0.0.1:57668','127.0.0.1:57668','127.0.0.1:57668','127.0.0.1:57668','127.0.0.1:57668','127.0.0.1:57668']
-}
-
-dfm = pd.DataFrame(data)
-dfm1 = pd.DataFrame(data1)
-"""
 
 # ===========================================================================
 # Programs
@@ -126,20 +124,39 @@ WORD_CLOUD = html.Img(
 )
 
 TABLE = dbc.Table.from_dataframe(
-	df.head(10), 
+	df.head(5), 
 	striped=True, 
 	bordered=True, 
-	hover=True
+	hover=True,
+	dark=True,
 )
 
 fig_bar_chart = go.Figure(data=[go.Bar(
-    y=unique_error_frequencies['unique_error_msgs'],
-    x=unique_error_frequencies['frequencies'],
+    y=unique_error_frequencies['unique_error_msgs'][:8],
+    x=unique_error_frequencies['frequencies'][:8],
     marker_color=colors, # marker color can be a single color value or an iterable
     orientation="h"
 )])
 
-fig_bar_chart.update_layout(title_text='Errors and Their Frequencies Bar Chart')
+#df1 = pd.DataFrame(unique_error_frequencies, x=)
+#fig_bar_chart = px.bar()
+
+
+fig_bar_chart.update_layout(
+	plot_bgcolor=colours['background'],
+	paper_bgcolor=colours['background'],
+   	font_color=colours['text'],
+   	xaxis=dict(
+   		title='Frequency',
+   		titlefont_size=16,
+   		tickfont_size=15,
+   	),
+   	yaxis=dict(
+        title='Error Messages',
+        titlefont_size=11,
+        tickfont_size=11,
+    ),
+)
 
 
 fig_pie_chart = go.Figure(data=[go.Pie(
@@ -148,7 +165,9 @@ fig_pie_chart = go.Figure(data=[go.Pie(
 	hole=.3)
 ])
 
-fig_pie_chart.update_layout(title_text='Errors and Their Frequencies Pie Chart')
+fig_pie_chart.update_layout(
+	title_text='Errors and Their Frequencies Pie Chart'
+)
 
 
 # ==============================================================
@@ -164,7 +183,6 @@ NAVBAR = dbc.Navbar(
                         dbc.NavbarBrand("ALFA Data Science Dashboard", className="ml-2")
                     ),
                 ],
-                align="center",
                 no_gutters=True,
             ),
         )
@@ -188,30 +206,27 @@ card_content = [
 
 # =============================================================
 # app.layout describes what the app will look like
-app.layout = html.Div(children=[
+app.layout = html.Div(children=[	
     NAVBAR,
 
     html.Div(
         style={'width': '80%', 'margin': 'auto', 'margin-top': '50px'}, 
         children=[
+        	html.H3(
+				"Data Table"
+			),
+			dbc.Button("expand", color="info", className="mr-1", id="tbl_expand_btn"),
             TABLE,
         ],
     ),
 
-    html.Div(
-        children=[
-            dcc.Graph(
-                figure=fig_bar_chart,
-            ),
-        ],
+    dcc.Graph(
+    	style={'padding-left': '80px', 'padding-right': '80px'},
+        figure=fig_bar_chart,    
     ),
 
-    html.Div(
-        children=[
-            dcc.Graph(
-                figure=fig_pie_chart,
-            ),
-        ],
+    dcc.Graph(
+        figure=fig_pie_chart,
     ),
 
     html.Div(
@@ -220,8 +235,11 @@ app.layout = html.Div(children=[
             dbc.Card(card_content, color='success', outline=True)
         ]
     ),
-])
+], style={'backgroundColor': colours['background']})
 # ===============================================================================================================
+
+# INTERACTIVENESS
+
 
 # create the WordCloud
 def plot_wordcloud(data):
@@ -230,8 +248,8 @@ def plot_wordcloud(data):
     wc.fit_words(d)
     return wc.to_image()
 
-@app.callback(dd.Output('image_wc', 'src'), 
-               [dd.Input('image_wc', 'id')])
+@app.callback(Output('image_wc', 'src'), 
+               [Input('image_wc', 'id')])
 def make_image(b):
     img = BytesIO()
     plot_wordcloud(data=pd.DataFrame(unique_error_frequencies)).save(img, format='PNG')
