@@ -13,12 +13,14 @@ import plotly.graph_objects as go
 from datetime import datetime
 import nltk
 from nltk.tokenize import word_tokenize
+import flask
 
-# Global Constants
-PLOTLY_LOGO = "https://images.plot.ly/logo/new-branding/plotly-logomark.png"
-
+# server
+server = flask.Flask(__name__)
 # define the app 
-app = dash.Dash(__name__, external_stylesheets=[dbc.themes.DARKLY])
+app = dash.Dash(__name__, external_stylesheets=[dbc.themes.DARKLY], server=server)
+
+
 
 # =========================================================================
 # Import the dataset
@@ -57,18 +59,7 @@ for dirty in dirty_list:
     error_msg = " ".join(error_msg.split(" ")[:5])
     if error_msg:
         error_msg_list.append(error_msg.lower())
-'''
-stop_words = set(stopwords.words('english'))
-# remove all the stopwords
-for sentence in error_msg_list:
-	filtered_error_msg_list = []
-	word_tokens = word_tokenize(sentence)
-	filtered_sentence = [w for w in word_tokens if not w in stop_words] 
-	for w in word_tokens: 
-	    if w not in stop_words: 
-	        filtered_sentence.append(w)
-	filtered_error_msg_list.append(" ".join(filtered_sentence))
-'''
+
 # clean and formate the dates
 MONTH_MAP = {
     # map words to their digits representations
@@ -85,7 +76,6 @@ for date_time_str in date_time_list:
     formatted_date_str = date_time_pieces[2] +"/"+ MONTH_MAP[date_time_pieces[1][:3]] +"/"+ date_time_pieces[4][2:]
     # convert date string to actual date object and append to date list
     date_list.append(datetime.strptime(formatted_date_str, '%d/%m/%y').date())
-
 
 
 # create the dictionary of all the wrangled log file data
@@ -128,10 +118,6 @@ fig_bar_chart = go.Figure(data=[go.Bar(
     marker_color=colors, # marker color can be a single color value or an iterable
     orientation="h"
 )])
-
-#df1 = pd.DataFrame(unique_error_frequencies, x=)
-#fig_bar_chart = px.bar()
-
 
 fig_bar_chart.update_layout(
 	plot_bgcolor=colours['background'],
