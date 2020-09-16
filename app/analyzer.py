@@ -36,23 +36,15 @@ def predict(log_entry):
     word_list = []
     solution_list = []
 
-    # solutions = [
-    #     'Fatal error: Call to undefined function mysqli() in',
-    #     'Apache Error: No matching DirectoryIndex',
-    #     'configuring apache2 - LDAP and understanding LDAP configuration',
-    #     'Apache2 LDAP subgroup check',
-    #     'PHP - Failed to open stream : No such file or directory',
-    #     'Notice: Undefined index: variable',
-    #     'Fatal error: Call to undefined function mysqli() in',
-    #     'PHP Notice: Undefined index: [duplicate]',
-    #     'Access denied for user  (using password: YES) except root user'
-    # ]
 
     original_solutions = suggestions
     solutions_temp = []
     solutions = [line.split() for line in suggestions ]
     for line in solutions:
         line = [ps.stem(word) for word in line]
+        line = line[:10]
+        print('line')
+        print(line)
         solutions_temp.append(line)
     solutions = solutions_temp
 
@@ -64,7 +56,9 @@ def predict(log_entry):
             if syn is not None:
                 s_list.append(syn)
         solution_list.append(s_list)
-
+    log_entry = log_entry[:10]
+    print('Reduced entry')
+    print(log_entry)
     for word in log_entry:
         temp_syn = wn.synsets(str(word), pos=wn.NOUN)
         syn = temp_syn[0] if len(temp_syn) > 0 else None
@@ -74,6 +68,7 @@ def predict(log_entry):
     similarity = 0
     similarities = []
     count = 0
+
     for i in solution_list:
         if len(i) == 0:
             i.append(wn.synsets('apple', pos=wn.NOUN)[0])
@@ -85,8 +80,16 @@ def predict(log_entry):
         similarities.append(similarity)
         similarity = 0
         count += 1
+    if len(solution_list) == 0:
+        print('Scraping')
+        descr, link = scraper.scrape(unstemmed_log_entry)
+        payload = json.dumps({"link": link, "description": descr})
+        add = requests.post(url, json={"link": link, "description": descr}, headers=headers)
+        print(add.content)
+        results.append({"link": link, "description": descr})
+        return
     print(str(max(similarities)) + '\t' + articles[similarities.index(max(similarities))]['suggestions'][0]['description'])
-    if max(similarities) < 160:
+    if max(similarities) < 20:
         print('Scraping')
         descr, link =  scraper.scrape(unstemmed_log_entry)
         payload = json.dumps({"link": link, "description": descr})
