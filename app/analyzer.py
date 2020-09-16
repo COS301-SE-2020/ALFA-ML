@@ -89,7 +89,7 @@ def predict(log_entry):
         results.append({"link": link, "description": descr})
         return
     print(str(max(similarities)) + '\t' + articles[similarities.index(max(similarities))]['suggestions'][0]['description'])
-    if max(similarities) < 20:
+    if max(similarities) < 15:
         print('Scraping')
         descr, link =  scraper.scrape(unstemmed_log_entry)
         payload = json.dumps({"link": link, "description": descr})
