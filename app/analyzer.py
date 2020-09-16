@@ -10,20 +10,21 @@ from flask import jsonify, Flask
 from urllib.request import Request, urlopen
 from urllib.parse import urlencode
 
-headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36',}
-url = 'https://project-alfa.herokuapp.com/articles'
-s = requests.get(url)
-print(s)
-data = s.json()
-suggestions = []
-solutions = []
-articles = []
-results = []
-for i in data:
-    #print(i['suggestions'][0]5)
-    articles.append(i)
-    suggestions.append(i['suggestions'][0]['description'])
 
+def initialize():
+    headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36',}
+    url = 'https://project-alfa.herokuapp.com/articles'
+    s = requests.get(url)
+    print(s)
+    data = s.json()
+    suggestions = []
+    solutions = []
+    articles = []
+    results = []
+    for i in data:
+        #print(i['suggestions'][0]5)
+        articles.append(i)
+        suggestions.append(i['suggestions'][0]['description'])
 def predict(log_entry):
     print("Log entry: " + log_entry)
     log_entry = re.sub(
@@ -110,6 +111,7 @@ def fetch_result(entries):
     #         print(predict(line))
     #         print(results)
     #         print('================================================='
+    initialize()
     for i in entries:
         print(i)
         predict(i)
