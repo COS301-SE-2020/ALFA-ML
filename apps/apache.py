@@ -386,7 +386,7 @@ layout = html.Div(
 #     email_server_host = 'smtp.gmail.com'
 #     port = 587
 #     email_username = me
-#     email_password = 'pyraspace2020!'
+#     email_password = ''
 
 #     import smtplib
 #     from email.mime.multipart import MIMEMultipart
