@@ -105,7 +105,7 @@ def predict(log_entry):
         payload = json.dumps({"link": link, "description": descr})
         add = requests.post(url, json = {"link": link, "description": descr} , headers  = headers)
         print(add.content)
-        results.append({"log_entry": original_entry,"link": link, "description": description, "votes": 0})
+        results.append({"log_entry": original_entry,"link": link, "description": descr, "votes": 0})
     else:
         result_article = articles[similarities.index(max(similarities))]['suggestions'][0]
         description = result_article['description']
