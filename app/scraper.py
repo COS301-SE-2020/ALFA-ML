@@ -16,8 +16,7 @@ def scrape(query):
     soup = BeautifulSoup(page.text, 'html.parser')
 
     # print(soup.find("div", {"class": "r"}).a['href'])
-    print(soup)
-    new_url = soup.find("div", {"class": "r"}).a['href']
+    new_url = soup.find("div", {"class": "rc"}).a['href']
     print(new_url)
     page = requests.get(new_url, headers = headers)
     soup = BeautifulSoup(page.text, 'html.parser')
